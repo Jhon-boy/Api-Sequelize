@@ -132,7 +132,7 @@ export const Login = async (req, res) => {
       await unUser.save();
 
       // Generar el token
-      const token = jwt.sign({ correo: unUser.correo }, 'secreto', { expiresIn: '1h' });
+      const token = jwt.sign({ correo: unUser.correo }, 'secreto', { expiresIn: '7d' });
 
       // Retornar los datos del usuario (incluyendo la contraseña encriptada) y un status indicando que el inicio de sesión fue exitoso
       res.status(200).json({
