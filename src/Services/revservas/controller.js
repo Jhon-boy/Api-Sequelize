@@ -75,7 +75,7 @@ export const createReserva = async (req, res) => {
     if (!validarFechaEntrega(fecha_entrega)) {
         return res.status(404).json({ message: 'LA FECHA ES INVALIDA de ENTREGA' });
     }
-
+    
     if (!determinarFechaDevolucion(fecha_entrega, fecha_devolucion)) {
         return res.status(404).json({ message: 'LA FECHA DE DEVOLUCION  ES INVALIDA' });
     }

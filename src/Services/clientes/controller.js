@@ -3,7 +3,7 @@ import { usuarios } from '../../models/usuarios.js';
 import { letrasMayusculas } from './helpers.js';
 import multer from 'multer';
 import path from 'path'
-
+import { enviarMail } from '../Mensajes.js';
 
 import {
     verificarNombre,
@@ -13,6 +13,7 @@ import {
     verificarGenero,
 
 } from './rules.js'
+
 
 
 const storage = multer.diskStorage({
@@ -65,6 +66,7 @@ export const getClientes = async (req, res) => {
         return res.status(500).json({ message: error.message });
     }
 }
+
 export const getClientesPendiente = async (req, res) => {
     try {
         const obtenerClientes = await clientes.findAll({
@@ -245,3 +247,40 @@ export const eliminarCliente = async (req, res) => {
         return res.status(500).json({ message: error.message });
     }
 }
+
+export const recuperarContrasena = async (req, res) => {
+    try {
+        const { correo, contrasenaNueva, cedula } = req.body;
+
+        const correoAux = correo.toLowerCase();
+
+        try {
+            // Buscar el id del usuario mediante el correo
+            const usuario = await usuarios.findOne({ where: { correo: correoAux } });
+            if (!usuario) {
+                return res.status(404).json({ message: "Error: No se encontró el usuario con el correo especificado." });
+            }
+            const id = usuario.id_usuario;
+            // Verificar si el usuario existe mediante la cedula
+            const usuarioExistente = await clientes.findOne({ where: { id_usuario: id, cedula } });
+            if (!usuarioExistente) {
+                return res.status(404).json({ message: "Error: No se encontró el usuario con la cédula especificada." });
+            }
+
+            // Actualizar la contraseña del usuario
+            const actualizar = await usuarios.update({ contrasena: contrasenaNueva }, {
+                where: {
+                    id_usuario: id
+                }
+            });
+            enviarMail(contrasenaNueva);
+
+            res.send(actualizar);
+        } catch (error) {
+            return res.status(500).json({ message: error.message });
+        }
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
+    
+};

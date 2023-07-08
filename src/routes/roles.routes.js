@@ -3,11 +3,11 @@ import { Router } from 'express';
 import { getRol, getRoles } from '../Services/roles/controller.js';
 import { Login  , actualizarUser, eliminarUser, getUser, getUsers, insertarUser, logOut } from '../Services/usuarios/controllerUser.js';
 import { getAuto, getAutos, editarAutos, eliminarAutos, insertarAuto, upload, editarAutosSinFoto, cambiarEstadoAuto } from '../Services/autos/controller.js';
-import { getClientes, getCliente, editarCliente, eliminarCliente, insertarCliente, uploadClient, getClientesPendiente, editarEstadosCliente} from '../Services/clientes/controller.js';
+import { getClientes, getCliente, editarCliente, eliminarCliente, insertarCliente, uploadClient, getClientesPendiente, editarEstadosCliente, recuperarContrasena} from '../Services/clientes/controller.js';
 import { editarLicencia, eliminarLicencia, getLicencia, getLicencias, insertarLicencia , uploadLicencias } from '../Services/licencias/controller.js';
 import { getReservas, getReserva, getUserReservas, createReserva,getReservasPendiente, updateReserva, updateEstado } from '../Services/revservas/controller.js';
 import { cancelarPago, crearPago, getPago, getPagos, getPagosUser } from '../Services/pagos/controller.js';
-import { crearMensaje } from '../Services/mensajes/controller.js';
+import { crearMensaje, obtenerMensaje } from '../Services/mensajes/controller.js';
 import { crearHistorials, obtenerHistorial , obtenerHistoriales} from '../Services/historial/controller.js';
 import { DatosVar, editaVars } from '../Services/Configs/Controller.js';
 
@@ -26,6 +26,7 @@ router.get('/user', getUsers)
 router.get('/user/:id', getUser)
 router.post('/login', Login)
 router.post('/logOut', logOut)
+router.post('/recuperarContrasena', recuperarContrasena)
 router.post('/user', insertarUser);
 router.put('/user/:id', actualizarUser);
 router.delete('/user:id',eliminarUser);
@@ -65,7 +66,9 @@ router.get('/pagosCliente/:id', getPagosUser)
 router.post('/pagos', crearPago);
 router.delete('/pagos/:id', cancelarPago)
 
+
 router.post('/mensajes', crearMensaje);
+router.get('/obtenerMensaje/:id/:id_', obtenerMensaje);
 
 router.post('/historial', crearHistorials)
 router.get('/historial', obtenerHistoriales)

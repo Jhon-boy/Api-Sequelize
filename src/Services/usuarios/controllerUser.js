@@ -1,6 +1,7 @@
 import { usuarios } from "../../models/usuarios.js";
 import { validarCorreoContrasena } from './rules.js'
 import jwt from 'jsonwebtoken';
+import { Op } from 'sequelize';
 
 export const getUsers = async (req, res) => {
   try {
@@ -66,7 +67,6 @@ export const getUser = async (req, res) => {
   }
 
 }
-
 export const actualizarUser = async (req, res) => {
   const { id } = req.params;
   const { correo, contrasena, estado } = req.body;
@@ -79,18 +79,27 @@ export const actualizarUser = async (req, res) => {
   const estadoAux = estado.toUpperCase();
 
   try {
-    // Verificar si el usuario ya existe
-    const usuarioExistente = await usuarios.findOne({ correo: correoAux });
-    if (usuarioExistente && usuarioExistente.id_usuario !== id) {
-      return res.status(403).json({ message: "Error: El usuario ya existe en el sistema." });
+    // Verificar si ya existe otro usuario con el mismo correo
+    const usuarioExistente = await usuarios.findOne({
+      where: {
+        correo: correoAux,
+        id_usuario: { [Op.ne]: id } // Excluir el usuario actual en la búsqueda
+      }
+    });
+
+    if (usuarioExistente) {
+      return res.status(409).json({ message: "Error: Ya existe otro usuario con el mismo correo." });
     }
 
     // Actualizar los datos del usuario
-    const actualizar = await usuarios.update({ correo: correoAux, contrasena, estado: estadoAux }, {
-      where: {
-        id_usuario: id
+    const actualizar = await usuarios.update(
+      { correo: correoAux, contrasena, estado: estadoAux },
+      {
+        where: {
+          id_usuario: id
+        }
       }
-    });
+    );
 
     res.send(actualizar);
   } catch (error) {
@@ -137,7 +146,7 @@ export const Login = async (req, res) => {
       // Retornar los datos del usuario (incluyendo la contraseña encriptada) y un status indicando que el inicio de sesión fue exitoso
       res.status(200).json({
         usuario: {
-          id: unUser.id,
+          id: unUser.id_usuario,
           correo: unUser.correo,
           rol: unUser.id_rol,
           contrasena: unUser.contrasena, // Aquí se retorna la contraseña encriptada
@@ -157,6 +166,9 @@ export const Login = async (req, res) => {
     return res.status(500).json({ message: error.message });
   }
 }
+
+
+
 
 export const logOut = async (req, res) => {
   const token = req.headers.authorization;
