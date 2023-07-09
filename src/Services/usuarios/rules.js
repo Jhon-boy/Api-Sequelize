@@ -17,7 +17,7 @@ export const  validarCorreoContrasena = (correo, contraseña) =>{
     }
     
     if (!/[A-Z]/.test(contraseña)) {
-        console.log("La contraseña debe contener al menos una letra mayúscula.");
+        console.log("La contraseña debe contener al menos una letra MAYUSCULAS.");
       return false;
     }
     
