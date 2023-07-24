@@ -27,6 +27,7 @@ export const uploadLicencias = multer({
             return cb(null, true)
         }
         cb('DAME UN FORMATO CORRECTO')
+        
     }
 
 }).single('fotolicencia')
@@ -60,7 +61,11 @@ export const insertarLicencia = async (req, res) => {
     const { id_licencia, fecha_caducidad, estado, categoria } = req.body;
     const fotolicencia = req.file.path;
 
+    console.log('========================DATOS DE LICENCIA ========================================')
+    console.log('ID: ' + id_licencia + ' - Fecha: '+ fecha_caducidad + ' - Estado: ' + estado + ' - Categoria: ' + categoria + '- Fotolicencia: ' + fotolicencia);
+    console.log('================================================================')
     if (!id_licencia || !fotolicencia || !fecha_caducidad || !estado || !categoria) {
+        console.log('Faltan campos obligatorios' + estado + categoria )
         return res.status(400).json({ message: 'Faltan campos obligatorios' + estado + categoria });
     }
     const estadoAux = letrasMayusculas(estado);
@@ -68,15 +73,12 @@ export const insertarLicencia = async (req, res) => {
 
 
     if (!verificarCategorias(categoriaAux)) {
+        console.log('ERROR: No se encuentra la categoria' )
         return res.status(400).json({ message: 'ERROR: No se encuentra la categoria' });
     }
-    // if (!verificarExtensionFotolicencia(fotolicencia)) { 
-    //     return res.status(400).json({ message: 'La extension de la fotolicencia no es compatible' });
-    // }
-    // if (!verificarEstado(estadoAux)) {
-    //     return res.status(400).json({ message: 'ERROR: EL ESTADO DEBE SER BOLEANO' });
-    // }
+  
     if (!verificarFechas(fecha_caducidad)) {
+        console.log('LICENCIA CADUCADA O PRONTO CADUCARA')
         return res.status(400).json({ message: 'LICENCIA CADUCADA O PRONTO CADUCARA' });
     }
 
@@ -88,7 +90,7 @@ export const insertarLicencia = async (req, res) => {
             estado: estadoAux,
             categoria: categoriaAux,
         });
-        res.sendStatus(200).json({ message: 'Licencia Creada' });
+        res.status(200).json({ message: 'Licencia Creada' });
     } catch (error) {
         return res.status(500).json({ message: error.message });
     }

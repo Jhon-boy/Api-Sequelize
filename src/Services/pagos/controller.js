@@ -3,7 +3,9 @@ import { letrasMayusculas } from "./helper.js";
 import { verificarFecha, verificarMonto, verificarTipo } from "./rules.js";
 import { clientes } from "../../models/clientes.js";
 import { autos } from "../../models/autos.js";
-import { enviarFactura } from "../Mensajes.js";
+import { enviarFactura, mailPago } from "../Mensajes.js";
+import { usuarios } from '../../models/usuarios.js';
+
 
 export const getPagos = async (req, res) => {
     try {
@@ -95,16 +97,52 @@ export const crearPago = async (req, res) => {
 }
 
 export const cancelarPago = async (req, res) => {
-    const { id } = req.params;
+    const { pago } = req.params;
+    const { cliente, mensaje } = req.body;
+    console.log('INFORMACIO=====================0   ')  
+    console.log(cliente, mensaje + pago, )
     try {
         const cancelar = await pagos.destroy({
             where: {
-                id_pago: id
+                id_pago: pago
             }
-        })
+        });
+
+        // Buscar el cliente asociado al id_pago proporcionado
+        const clienteRespose = await clientes.findOne({
+            where: {
+                id_cliente: cliente
+            }
+        });
+
+        if (!clienteRespose) {
+            console.log('cliente no encontrado');
+            return res.status(404).json({ message: 'Cliente no encontrado' });
+        }
+
+        // Obtener el id_usuario del cliente
+        const idUsuario = clienteRespose.id_usuario;
+
+        // Buscar el usuario asociado al id_usuario
+        const usuario = await usuarios.findOne({
+            where: {
+                id_usuario: idUsuario
+            }
+        });
+
+        if (!usuario) {
+            console.log('USUARIO no encontrado');
+            return res.status(404).json({ message: 'Usuario no encontrado' });
+        }
+
+        // Aquí tienes el correo del usuario asociado al cliente cuyo id_pago se proporcionó
+        const correoUsuario = usuario.correo;
+        mailPago(correoUsuario, mensaje)
+        // Hacer cualquier otra operación necesaria con el correo del usuario
+
         res.sendStatus(200);
     } catch (error) {
+        console.log('============0EEROR============')
         return res.status(500).json({ message: error.message });
     }
-
-}
+};

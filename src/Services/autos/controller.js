@@ -62,13 +62,15 @@ export const upload = multer({
 export const insertarAuto = async (req, res) => {
 
     const { placas, marca, modelo, anio, detalles, estado, tipo, precio } = req.body;
+    
     const fotos = req.file.path;
+    console.log('Placas: ' + placas + ' marca: ' + marca + ' estado: ' + estado + 'detalles' + detalles + 'tipo' + tipo + ' PRECIO' +precio)
+    console.log('Fotos: ' + fotos)
     // Verificar si algún campo está vacío
 
     if (!placas || !marca || !modelo || !anio || !detalles || !estado || !tipo || !precio) {
         return res.status(400).json({ message: 'Error: Todos los campos deben ser completados' });
     }
-
     const marcaAux = letrasMayusculas(marca);
     const modeloAux = letrasMayusculas(modelo);
     const placasAux = letrasMayusculas(placas);
@@ -292,7 +294,7 @@ export const cambiarEstadoAuto = async (req, res) => {
     if (!estados(estadoAux)) {
         return res.status(400).json({ message: 'Error: El estado ingresado es inválido' });
     }
-    try{
+    try {
         const editar = await autos.update({
             estado: estadoAux
         }, {
@@ -301,7 +303,7 @@ export const cambiarEstadoAuto = async (req, res) => {
             }
         })
         res.send(editar);
-    }catch(error){
+    } catch (error) {
         return res.status(500).json({ message: error.message });
     }
 }

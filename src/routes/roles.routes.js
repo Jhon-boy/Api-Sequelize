@@ -3,7 +3,7 @@ import { Router } from 'express';
 import { getRol, getRoles } from '../Services/roles/controller.js';
 import { Login  , actualizarUser, eliminarUser, getUser, getUsers, insertarUser, logOut } from '../Services/usuarios/controllerUser.js';
 import { getAuto, getAutos, editarAutos, eliminarAutos, insertarAuto, upload, editarAutosSinFoto, cambiarEstadoAuto } from '../Services/autos/controller.js';
-import { getClientes, getCliente, editarCliente, eliminarCliente, insertarCliente, uploadClient, getClientesPendiente, editarEstadosCliente, recuperarContrasena} from '../Services/clientes/controller.js';
+import { getClientes, getCliente, editarCliente, eliminarCliente, insertarCliente, uploadClient, getClientesPendiente, editarEstadosCliente, recuperarContrasena, getCorreos} from '../Services/clientes/controller.js';
 import { editarLicencia, eliminarLicencia, getLicencia, getLicencias, insertarLicencia , uploadLicencias } from '../Services/licencias/controller.js';
 import { getReservas, getReserva, getUserReservas, createReserva,getReservasPendiente, updateReserva, updateEstado } from '../Services/revservas/controller.js';
 import { cancelarPago, crearPago, getPago, getPagos, getPagosUser } from '../Services/pagos/controller.js';
@@ -24,6 +24,7 @@ router.get('/roles/:id', getRol);
 
 router.get('/user', getUsers)
 router.get('/user/:id', getUser)
+router.get('/correos', getCorreos)
 router.post('/login', Login)
 router.post('/logOut', logOut)
 router.post('/recuperarContrasena', recuperarContrasena)
@@ -64,7 +65,7 @@ router.get('/pagos', getPagos)
 router.get('/pagos/:id', getPago)
 router.get('/pagosCliente/:id', getPagosUser)
 router.post('/pagos', crearPago);
-router.delete('/pagos/:id', cancelarPago)
+router.delete('/pagos/:pago', cancelarPago)
 
 
 router.post('/mensajes', crearMensaje);

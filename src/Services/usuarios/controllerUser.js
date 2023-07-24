@@ -43,8 +43,8 @@ export const insertarUser = async (req, res) => {
       estado: estadoAux,
     });
 
-    console.log("Nuevo Usuario", nuevoUser);
-    res.send("USUARIO CREADO BRO :3");
+    console.log("Nuevo Usuario", nuevoUser.dataValues); // Muestra solo los valores del usuario
+    res.status(200).json({ message: "El usuario ha sido creado correctamente", id_usuario: nuevoUser.id_usuario });
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }

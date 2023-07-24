@@ -3,7 +3,7 @@ import { usuarios } from '../../models/usuarios.js';
 import { letrasMayusculas } from './helpers.js';
 import multer from 'multer';
 import path from 'path'
-import { enviarMail } from '../Mensajes.js';
+import { enviarMail, nuevoUsuario } from '../Mensajes.js';
 
 import {
     verificarNombre,
@@ -67,6 +67,17 @@ export const getClientes = async (req, res) => {
     }
 }
 
+export const getCorreos = async (req, res) => {
+    try {
+      const obtenerClientes = await usuarios.findAll({ attributes: ['correo'] });
+      const correos = obtenerClientes.map(cliente => cliente.correo);
+      res.json(correos);
+    } catch (error) {
+      return res.status(500).json({ message: error.message });
+    }
+  };
+
+
 export const getClientesPendiente = async (req, res) => {
     try {
         const obtenerClientes = await clientes.findAll({
@@ -81,10 +92,14 @@ export const getClientesPendiente = async (req, res) => {
 };
 
 export const insertarCliente = async (req, res) => {
+
     const { nombre, apellido, cedula, genero, estado, id_usuario, id_licencia } = req.body;
     const foto = req.file.path;
+    console.log('=====================0============INFORMACIONNN====================================================')
+    console.log('- NOMBRE: ' + nombre, ' - Foto: ' + foto + ' -  APELLIDO' + apellido+ ' - genero: ' + genero + ' ESTADO='+ estado + ' - id_licencia: ' + id_licencia  + 'id_usuario: ' + id_usuario)
 
-    if (!nombre || !apellido || !cedula || !genero || !estado || !id_usuario || !id_licencia) {
+    if (!nombre || !apellido || !cedula  || !genero || !estado || !id_usuario || !id_licencia) {
+        console.log('INCOMPLETO LA INFO')
         res.status(400).json({ error: 'Alguno de los campos está vacío' });
     }
 
@@ -94,23 +109,23 @@ export const insertarCliente = async (req, res) => {
     const estadoAux = letrasMayusculas(estado);
 
     if (!verificarNombre(nombre)) {
+        console.log('USUARIO ICNOMPLETO')
         return res.status(400).json({ message: 'Error: El nombre ingresado es inválido.' });
     }
 
     if (!verificarCedula(cedula)) {
+        console.log('cedula  ICNOMPLETO')
         return res.status(400).json({ message: 'Error: La cédula ingresada es inválida.' });
     }
 
     if (!verificarGenero(genero)) {
+        console.log('genero ICNOMPLETO')
         return res.status(400).json({ message: 'Error: El género ingresado es inválido.' });
     }
 
     if (!verificarEstado(estado)) {
+        console.log('estado ICNOMPLETO')
         return res.status(400).json({ message: 'Error: El estado ingresado es inválido.' });
-    }
-
-    if (!verificarExtensionFoto(foto)) {
-        return res.status(400).json({ message: 'Error: La extensión de la foto es inválida.' });
     }
 
     try {
@@ -121,6 +136,7 @@ export const insertarCliente = async (req, res) => {
         });
 
         if (cedulaExistente) {
+            console.log(' cedula ya existe')
             return res.status(400).json({ message: 'La cédula ya está registrada' });
         }
 
@@ -135,7 +151,7 @@ export const insertarCliente = async (req, res) => {
             id_usuario,
             id_licencia
         });
-
+        nuevoUsuario(nombre, apellido)
         res.send('Cliente ingresado correctamente');
     } catch (error) {
         return res.status(500).json({ message: error.message });
@@ -144,7 +160,6 @@ export const insertarCliente = async (req, res) => {
 
 export const editarCliente = async (req, res) => {
 
-    try {
         const { id } = req.params;
         const { nombre, apellido, cedula, genero, estado } = req.body;
 
@@ -198,9 +213,7 @@ export const editarCliente = async (req, res) => {
         } catch (error) {
             return res.status(500).json({ message: error.message });
         }
-    } catch (error) {
-        return res.status(500).json({ message: error.message });
-    }
+  
 };
 
 export const editarEstadosCliente = async (req, res) => {
@@ -273,7 +286,7 @@ export const recuperarContrasena = async (req, res) => {
                     id_usuario: id
                 }
             });
-            enviarMail(contrasenaNueva);
+            enviarMail(correoAux, contrasenaNueva);
 
             res.send(actualizar);
         } catch (error) {

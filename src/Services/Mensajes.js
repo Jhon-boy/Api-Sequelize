@@ -20,7 +20,11 @@ export const enviarMail = (correo, nuevaContrasena) => {
         subject: 'Recuperar Contraseña',
         html: `      <h2 style="margin-bottom: 20px;">Haz solicitado restablecer tu contraseña</h2>
         <p>Por favor, actualiza inmediatamente tu Contraseña:</p>
-           <p>Tu nueva contraseña es: <strong>${nuevaContrasena}</strong></p>`
+           <h3>Tu nueva contraseña es: <strong>${nuevaContrasena}</strong></h3>
+           <h4>No compartas esta información con nadie mas</h4>
+           
+           <h6>Team RentaCar </h6>
+           `
     };
 
     const transport = nodemailer.createTransport(config);
@@ -33,6 +37,37 @@ export const enviarMail = (correo, nuevaContrasena) => {
         }
     });
 };
+
+export const mailPago = (correo, mensajeCancelacion) => {
+    const config = {
+        host: 'smtp.gmail.com',
+        port: 587,
+        auth: {
+            user: 'jhoncuvi12@gmail.com',
+            pass: 'rnnmlcemreuekfhl'
+        }
+    };
+
+    const mensaje = {
+        from: 'jhoncuvi12@gmail.com',
+        to: correo,
+        subject: 'Cancelación de Pago',
+        html: `<h2 style="margin-bottom: 20px;">Lamentablemente debemos cancelar el pago</h2>
+      <p>${mensajeCancelacion}</p>
+      <h6>Team RentaCar</h6>`
+    };
+
+    const transport = nodemailer.createTransport(config);
+
+    transport.sendMail(mensaje, (error, info) => {
+        if (error) {
+            console.error(error);
+        } else {
+            console.log('Email enviado:', info.response);
+        }
+    });
+};
+
 export const enviarFactura = (correo, marca, modelo, total, fechaFactura) => {
     const fechaPago = moment().format('YYYY-MM-DD');
     const numeroFactura = '0087xxxxx7';
@@ -95,7 +130,7 @@ export const enviarFactura = (correo, marca, modelo, total, fechaFactura) => {
     });
 };
 
-export const nuevoUsuario = (nuevoUsuario) => {
+export const nuevoUsuario = (nuevoUsuario, apellido) => {
     const config = {
         host: 'smtp.gmail.com',
         port: 587,
@@ -108,9 +143,9 @@ export const nuevoUsuario = (nuevoUsuario) => {
     const mensaje = {
         from: 'jhoncuvi12@gmail.com',
         to: 'jhoncuvi12@gmail.com',
-        subject: 'Aviso de Usuario Creado',
+        subject: 'Aviso de Cliente Creado',
         html: `<p>Se ha creado un nuevo usuario:</p>
-             <p>Correo electrónico: <strong>${nuevoUsuario}</strong></p>
+             <p>Cliente : <strong>${nuevoUsuario}</strong> <strong>${apellido}</strong> </p>
              <p>Revisa su perfil inmediatamente!</p>`
     };
 
