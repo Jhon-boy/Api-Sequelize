@@ -102,7 +102,6 @@ export const insertarCliente = async (req, res) => {
         console.log('INCOMPLETO LA INFO')
         res.status(400).json({ error: 'Alguno de los campos está vacío' });
     }
-
     const nombreAux = letrasMayusculas(nombre);
     const apellidoAux = letrasMayusculas(apellido);
     const generoAux = letrasMayusculas(genero);
